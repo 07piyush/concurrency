@@ -18,6 +18,7 @@ public class SharedResource {
 		while(!isAvailable) {
 			System.out.println("");
 			try {
+				//Thread is in wait state
 				wait();
 			} catch (InterruptedException e) {
 				

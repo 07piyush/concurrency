@@ -35,6 +35,7 @@ public class Multithreading {
 		Thread producer = new Thread(new Producer(resourceObj));
 		Thread consumer =  new Thread(new Consumer(resourceObj));
 		
+		//Thread is in Runnable state.
 		producer.start();
 		consumer.start();
 	}

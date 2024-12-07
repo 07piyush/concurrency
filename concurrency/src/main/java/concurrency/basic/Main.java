@@ -1,6 +1,6 @@
 package concurrency.basic;
 
-public class Multithreading {
+public class Main {
 
 	public static void main(String[] args) {
 		//1. There are two ways to create a thread.

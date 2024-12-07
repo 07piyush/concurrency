@@ -29,6 +29,14 @@ public class Multithreading {
 		t1.start();
 		t2.start();
 		t3.start();
+		
+		//3. Spurious wake-up
+		SharedResource resourceObj = new SharedResource();
+		Thread producer = new Thread(new Producer(resourceObj));
+		Thread consumer =  new Thread(new Consumer(resourceObj));
+		
+		producer.start();
+		consumer.start();
 	}
 
 }

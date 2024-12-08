@@ -2,11 +2,11 @@ package locksAndSemaphores;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class SharedResource {
+public class ReentrantSharedResource {
 
 	private boolean isAvailable;
 	
-	public SharedResource() {
+	public ReentrantSharedResource() {
 		isAvailable = false;
 	}
 	

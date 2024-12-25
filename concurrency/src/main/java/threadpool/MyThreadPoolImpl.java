@@ -12,27 +12,27 @@ public class MyThreadPoolImpl {
 	/*
 	 * corePoolSize : the number of threads to keep in the pool, even if they are idle, unless allowCoreThreadTimeOut is set
 	 * */
-	int corePoolSize = 3;
+	int corePoolSize = 2;
 	
 	/*
 	 * maximumPoolSize : when all threads out of corePoolSize are busy and workQueue is also full 
 	 * and a new task is submitted for execution, then a new thread will be created. In this case 2 more 
 	 * threads can be created summing up to 5.
 	 * */  
-	int maximumPoolSize = 5;
+	int maximumPoolSize = 3;
 
 	/*
 	 * keepAliveTime when the number of threads is greater than the core, this is the maximum time that excess idle 
 	 * threads will wait for new tasks before terminating.
 	 * */
-	long keepAliveTime = 10;
+	long keepAliveTime = 1;
 
 	TimeUnit unit = TimeUnit.MINUTES;
 
 	/*
 	 * this queue will hold the runnable task needs to be executed when a thread becomes available.
 	 * */
-	BlockingQueue <Runnable> workQueue = new ArrayBlockingQueue<Runnable>(5);
+	BlockingQueue <Runnable> workQueue = new ArrayBlockingQueue<Runnable>(2);
 
 	/*
 	 * whenever during the life cycle of thread pool executor a new thread is created, some properties of thread can
@@ -49,10 +49,49 @@ public class MyThreadPoolImpl {
 	 * to add logs etc.
 	 * 
 	 * */
-	RejectedExecutionHandler handler = new ThreadPoolExecutor.DiscardOldestPolicy();
+	RejectedExecutionHandler handler = new CustomRejectedExecutionHandler();
 	
-	ThreadPoolExecutor threadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, null);
+	ThreadPoolExecutor threadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
+	
+	public MyThreadPoolImpl() {
+		
+	}
+	
+	public void submitFourTasks() {
+		System.out.println("Demonstration with 4 concurrent task submissions.");
+		for(int i=0; i<4; i++) {
+			
+			threadPool.submit(() -> {
+				System.out.println("Running task by Thread : " + Thread.currentThread().getName());
+				try {
+					Thread.sleep(5000);
+				}
+				catch (Exception e) {
+					System.out.println(e.getStackTrace());
+				}
+				
+			});
+		}
+		threadPool.shutdown();
 
+	}
+	
+	public void submitEightTasks() {
+		System.out.println("Demonstration with 8 concurrent task submissions.");
+		for(int i=0; i<8; i++) {
+			
+			threadPool.submit(() -> {
+				System.out.println("Running task by Thread : " + Thread.currentThread().getName());
+				try {
+					Thread.sleep(5000);
+				}
+				catch (Exception e) {
+					
+				}
+			});
+		}
+		threadPool.shutdown();
+	}
 }
 
 class CustomThreadFactory implements ThreadFactory{
@@ -62,7 +101,16 @@ class CustomThreadFactory implements ThreadFactory{
 		Thread th = new Thread(r);
 		th.setPriority(Thread.NORM_PRIORITY);
 		th.setDaemon(false);
-		return null;
+		return th;
+	}
+	
+}
+
+class CustomRejectedExecutionHandler implements RejectedExecutionHandler{
+
+	@Override
+	public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+		System.out.println("Rejected task by Thread : ." + Thread.currentThread().getName());
 	}
 	
 }

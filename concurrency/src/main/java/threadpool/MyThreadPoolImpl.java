@@ -43,7 +43,14 @@ public class MyThreadPoolImpl {
 
 	/*
 	 * RejectedExecutionHandle describes when a task is submitted to execute, but neither there is any idle thread,
-	 * nor there is occupancy in queue. also any max capacity thread is also consumed and unavailable.
+	 * nor there is occupancy in queue. also any max capacity thread is also consumed and unavailable. This scenario is known
+	 * as Saturation. Saturation policy define how executor will handle tasks that are submitted at saturation point.
+	 * 
+	 * 1. Abort policy. : new ThreadPoolExecutor.AbortPolicy() | executor will throw RejectedExecutionException.
+	 * 2. Caller-Runs Policy. : task is not rejected, instead it is executed by caller thread. (lower parallelism)
+	 * 3. Discard policy : silently discards the new task when it fails to submit.
+	 * 4. Discard oldest policy : removes the oldest task from the queue(first) and adds newest task in it. and oldest task is rejected.
+	 * 5. Custom rejection policy : to handle the rejected task manually, we can implement RejectedExecutionHandler.
 	 * 
 	 * Executor will call rejectedExecutor which is a method declared in the interface. This method can be overridden
 	 * to add logs etc.
@@ -54,7 +61,8 @@ public class MyThreadPoolImpl {
 	ThreadPoolExecutor threadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
 	
 	public MyThreadPoolImpl() {
-		
+		//the keepAliveTime is only usefull when below is checked true.
+		threadPool.allowCoreThreadTimeOut(true);
 	}
 	
 	public void submitFourTasks() {

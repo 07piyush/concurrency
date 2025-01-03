@@ -40,11 +40,20 @@ public class CompletableFutureExample {
 		 * thread pool will be picked for executing submitted task.
 		 * 
 		 * It will return a CompletableFuture object.
+		 * 
 		 * 2. thenApply : when task is completed by supplyAsync then same thread will continue the work that is expected in
 		 * thenApply. again the thread will belong to forkJoinPool if executor is provided.
 		 * 
+		 * futureObj has all the context about its thread task status etc. so thenApply or thenApplyAsync registers a callback. 
+		 * This callback specifies what must happen once result sypplyAsync is available.
 		 * 
+		 * 3. thenApplylAsync : the task will be performed by some other thread. again thread will be chosen on type of executor, forkjoinpool if no
+		 * executor provided.
 		 * 
+		 *  Why there is thenApply and thenApplyAsync? what is the usecase of both?
+		 *  Ans : since thenApply use same thread, there is no context switching, so lightweight task can be done using thenapply.
+		 *  while if a task is CPU-intensive then use thenApplyAsync to increase responsiveness in some cases.
+		 *  
 		 * */
 		
 	 	CompletableFuture<String> futureObj = CompletableFuture.supplyAsync(()->{
@@ -56,7 +65,19 @@ public class CompletableFutureExample {
 			System.out.println("Result from completable future with then apply :" + result);
 		}catch(Exception e) {}
 		
-		//futureObj has all the context about its thread task status etc. so then apply can be
+		
+		//below is example of thenApplyAsync.
+		CompletableFuture<String> futureObj2 = CompletableFuture.supplyAsync(()->{
+			return "John ";
+		}).thenApplyAsync((String value)-> {return value + "Doe";});
+		
+		try {
+			String result = futureObj2.get();
+			System.out.println("Result from completable future with then apply :" + result);
+		}catch(Exception e) {}
+		
+		
+		
 	}
 
 }
